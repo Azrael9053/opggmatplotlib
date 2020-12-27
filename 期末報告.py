@@ -27,6 +27,7 @@ pp_list = []
 pw_list = []
 for c in clist:
     champion_list.append(c.text)
+print(champion_list)
 for v in value_list:
     if count % 3 == 0:
         Win_Ratio.append(float(v.text.replace('%', '')))
@@ -38,6 +39,7 @@ for v in value_list:
 by_tier_list = [champion_list, Win_Ratio, Pick_Rate, KDA_list]
 for pc in position_champion:
     pc_list.append(pc.text)
+print(pc_list)
 count = 0
 for pv in position_value_list:
     if count % 3 == 0:
@@ -72,9 +74,9 @@ def update(val):
     # global A, B, C
     if mode == 'by_tier':
         s = int(som1.val)
-        win = (Win_Ratio[s*1-1], Win_Ratio[s*2-1], Win_Ratio[s*3-1])
-        pick = (Pick_Rate[s*1-1], Pick_Rate[s*2-1], Pick_Rate[s*3-1])
-        kda = (KDA_list[s*1-1], KDA_list[s*2-1], KDA_list[s*3-1])
+        win = (Win_Ratio[s*3-3], Win_Ratio[s*3-2], Win_Ratio[s*3-1])
+        pick = (Pick_Rate[s*3-3], Pick_Rate[s*3-2], Pick_Rate[s*3-1])
+        kda = (KDA_list[s*3-3], KDA_list[s*3-2], KDA_list[s*3-1])
         A = ax.bar(index,
                     win,
                     bar_width)
@@ -85,13 +87,13 @@ def update(val):
                     kda,
                     bar_width)
         ax.legend([A, B, C], ['Win Ratio (%)', 'Pick Rate (%)', 'KDA'])
-        ax.set_xticklabels([champion_list[s * 1 - 1], champion_list[s * 2 - 1], champion_list[s * 3 - 1]])
+        ax.set_xticklabels([champion_list[s*3-3], champion_list[s*3-2], champion_list[s * 3 - 1]])
         ax.set_xlabel(metal_list[s-1])
     elif mode == 'by_position':
         s = int(som2.val)
-        pp = (pp_list[s * 1 - 1], pp_list[s * 2 - 1], pp_list[s * 3 - 1])
-        pw = (pw_list[s * 1 - 1], pw_list[s * 2 - 1], pw_list[s * 3 - 1])
-        ban = (Ban_Rate[s * 1 - 1], Ban_Rate[s * 2 - 1], Ban_Rate[s * 3 - 1])
+        pp = (pp_list[s*3-3], pp_list[s*3-2], pp_list[s*3-1])
+        pw = (pw_list[s*3-3], pw_list[s*3-2], pw_list[s*3-1])
+        ban = (Ban_Rate[s*3-3], Ban_Rate[s*3-2], Ban_Rate[s*3-1])
         A = ax.bar(index,
                    pp,
                    bar_width)
@@ -102,7 +104,7 @@ def update(val):
                    ban,
                    bar_width)
         ax.legend([A, B, C], ['Pick Rate (%)', 'Win Ratio (%)', 'Ban Rate (%)'])
-        ax.set_xticklabels([pc_list[s * 1 - 1], pc_list[s * 2 - 1], pc_list[s * 3 - 1]])
+        ax.set_xticklabels([pc_list[s*3-3], pc_list[s*3-2], pc_list[s*3-1]])
         ax.set_xlabel(road_list[s - 1])
     createLabels(A)
     createLabels(B)
