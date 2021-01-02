@@ -1,10 +1,12 @@
 from selenium import webdriver
 from bs4 import BeautifulSoup
 import matplotlib.pyplot as plt
+import matplotlib
 import numpy as np
 from matplotlib.widgets import Slider,RadioButtons
-import time
+import requests
 
+token = '填你自己的token'
 browser = webdriver.Chrome('./chromedriver')
 browser.get('https://tw.op.gg/')
 html = browser.page_source
@@ -79,7 +81,7 @@ metal_list = ['全體', '菁英', '大師', '鑽石', '白金', '金牌', '銀�
 road_list = ['上路', '打野', '中路', '下路', '輔助']
 
 #畫圖
-def update(val):
+def update(val, **attrs):
     index = np.arange(3)
     bar_width = 0.2
     ax.clear()
@@ -88,7 +90,10 @@ def update(val):
     #按照牌位的模式
     if mode == 'by_tier':
         #取選擇條的值
-        s = int(som1.val)
+        if attrs == {}:
+            s = int(som1.val)
+        else:
+            s = attrs['num']
         win = (Win_Ratio[s*3-3], Win_Ratio[s*3-2], Win_Ratio[s*3-1])
         pick = (Pick_Rate[s*3-3], Pick_Rate[s*3-2], Pick_Rate[s*3-1])
         kda = (KDA_list[s*3-3], KDA_list[s*3-2], KDA_list[s*3-1])
@@ -108,7 +113,10 @@ def update(val):
     #按照路線的模式
     elif mode == 'by_position':
         #取選擇條的值
-        s = int(som2.val)
+        if attrs == {}:
+            s = int(som2.val)
+        else:
+            s = attrs['num']
         pp = (pp_list[s*3-3], pp_list[s*3-2], pp_list[s*3-1])
         pw = (pw_list[s*3-3], pw_list[s*3-2], pw_list[s*3-1])
         ban = (Ban_Rate[s*3-3], Ban_Rate[s*3-2], Ban_Rate[s*3-1])
@@ -148,6 +156,43 @@ def createLabels(data):
             va = "bottom",
         )
 
+def linenotify(token, msg, path):
+    headers = {
+        'Authorization':'Bearer ' + token
+    }
+
+    payload = {'message':msg}
+    files = {'imageFile':open(path, 'rb')}
+    r = requests.post('https://notify-api.line.me/api/notify',
+                      headers = headers, params = payload, files = files)
+    print(r.status_code)
+    return r.status_code
+
+plt.rcParams['font.sans-serif']=['MingLiu']
+
+for rd in ['by_tier', 'by_position']:
+    if rd == 'by_tier':
+        for ss in range(1,9):
+            mode = rd
+            update(None, num=ss)
+            plt.savefig(f'test{ss}.jpg')
+    else:
+        for ss in range(1,6):
+            mode = rd
+            update(None, num=ss)
+            plt.savefig(f'test{ss+8}.jpg')
+
+mode = 'by_tier'
+
+for i in range(1, 13):
+    image_path = f'test{i}.jpg'
+    if i < 9:
+        m = 'by_tier'
+    else:
+        m = 'by_position'
+    message = 'OPGG 排行' + m
+    linenotify(token, message, image_path)
+
 #如果選擇條有調整的話就執行update函式
 som1.on_changed(update)
 som2.on_changed(update)
@@ -157,5 +202,4 @@ radio.on_clicked(change_mode)
 
 #初始化 先畫圖
 update(None)
-plt.rcParams['font.sans-serif']=['MingLiu']
 plt.show()
