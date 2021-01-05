@@ -6,7 +6,7 @@ import numpy as np
 from matplotlib.widgets import Slider,RadioButtons
 import requests
 
-token = '填你自己的token'
+token = 'CBmdnGkeD9sWfxIdDYrHejwnI14sBjwmmE9ct0zz3xa'
 browser = webdriver.Chrome('./chromedriver')
 browser.get('https://tw.op.gg/')
 html = browser.page_source
@@ -150,8 +150,8 @@ def createLabels(data):
         height = item.get_height()
         ax.text(
             item.get_x()+item.get_width()/2.,
-            height*1.02,
-            '%d' % int(height),
+            height*1.005,
+            '%2.2f' % float(height),
             ha = "center",
             va = "bottom",
         )
@@ -170,28 +170,20 @@ def linenotify(token, msg, path):
 
 plt.rcParams['font.sans-serif']=['MingLiu']
 
-for rd in ['by_tier', 'by_position']:
-    if rd == 'by_tier':
-        for ss in range(1,9):
-            mode = rd
-            update(None, num=ss)
-            plt.savefig(f'test{ss}.jpg')
-    else:
-        for ss in range(1,6):
-            mode = rd
-            update(None, num=ss)
-            plt.savefig(f'test{ss+8}.jpg')
+
+for ss in range(1,6):
+    mode = 'by_position'
+    update(None, num=ss)
+    extent = ax.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
+    plt.savefig(f'test{ss}.jpg', bbox_inches=extent.expanded(1.2, 1.4))
+
+
+for i in range(1, 6):
+    image_path = f'test{i}.jpg'
+    message = 'OPGG 排行' + mode
+    linenotify(token, message, image_path)
 
 mode = 'by_tier'
-
-for i in range(1, 13):
-    image_path = f'test{i}.jpg'
-    if i < 9:
-        m = 'by_tier'
-    else:
-        m = 'by_position'
-    message = 'OPGG 排行' + m
-    linenotify(token, message, image_path)
 
 #如果選擇條有調整的話就執行update函式
 som1.on_changed(update)
