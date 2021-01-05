@@ -6,7 +6,7 @@ import numpy as np
 from matplotlib.widgets import Slider,RadioButtons
 import requests
 
-token = 'CBmdnGkeD9sWfxIdDYrHejwnI14sBjwmmE9ct0zz3xa'
+token = 'token'
 browser = webdriver.Chrome('./chromedriver')
 browser.get('https://tw.op.gg/')
 html = browser.page_source
